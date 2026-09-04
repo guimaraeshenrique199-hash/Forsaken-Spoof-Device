@@ -1,0 +1,595 @@
+--========================================================--
+--                 🖥By henrique📱
+--       📱 SCRIPT FORSAKEN SPOOF DEVICE 🖥
+--========================================================--
+
+local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local Network = require(
+	ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Network")
+)
+
+--========================================================--
+-- DEVICE SPOOF
+--========================================================--
+
+local DeviceSpoof = {}
+local ForcedDevice = "Console"
+local Enabled = true
+
+DeviceSpoof.Changed = Instance.new("BindableEvent").Event
+DeviceSpoof.Value = ForcedDevice
+
+local function ApplySpoof()
+	if not Enabled then
+		return
+	end
+
+	DeviceSpoof.Value = ForcedDevice
+
+	pcall(function()
+		Network:FireServerConnection(
+			"SetDevice",
+			"REMOTE_EVENT",
+			ForcedDevice
+		)
+	end)
+end
+
+local function GetRealDevice()
+	local Input = UserInputService:GetLastInputType()
+
+	if Input == Enum.UserInputType.Touch then
+		return "Mobile"
+	end
+
+	if Input == Enum.UserInputType.Gamepad1
+		or Input == Enum.UserInputType.Gamepad2
+		or Input == Enum.UserInputType.Gamepad3
+		or Input == Enum.UserInputType.Gamepad4
+		or Input == Enum.UserInputType.Gamepad5
+		or Input == Enum.UserInputType.Gamepad6
+		or Input == Enum.UserInputType.Gamepad7
+		or Input == Enum.UserInputType.Gamepad8 then
+		return "Console"
+	end
+
+	return "PC"
+end
+
+local function ResetSpoof()
+	Enabled = false
+
+	local RealDevice = GetRealDevice()
+
+	pcall(function()
+		Network:FireServerConnection(
+			"SetDevice",
+			"REMOTE_EVENT",
+			RealDevice
+		)
+	end)
+end
+
+--========================================================--
+-- REMOVER GUI ANTIGO
+--========================================================--
+
+local OldGui = PlayerGui:FindFirstChild("ForsakenSpoofDevice")
+
+if OldGui then
+	OldGui:Destroy()
+end
+
+--========================================================--
+-- GUI PRINCIPAL
+--========================================================--
+
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "ForsakenSpoofDevice"
+Gui.ResetOnSpawn = false
+Gui.DisplayOrder = 999999
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+Gui.Parent = PlayerGui
+
+local CLOSED_SIZE = UDim2.fromOffset(310, 205)
+local OPEN_SIZE = UDim2.fromOffset(310, 345)
+
+local Main = Instance.new("Frame")
+Main.Size = CLOSED_SIZE
+Main.Position = UDim2.new(0.5, -155, 0.22, 0)
+Main.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Parent = Gui
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 20)
+MainCorner.Parent = Main
+
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Thickness = 2
+MainStroke.Transparency = 0.15
+MainStroke.Parent = Main
+
+--========================================================--
+-- TÍTULO
+--========================================================--
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -60, 0, 40)
+Title.Position = UDim2.fromOffset(10, 8)
+Title.BackgroundTransparency = 1
+Title.Text = "📱 Script Forsaken Spoof Device 🖥"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 17
+Title.Font = Enum.Font.GothamBold
+Title.Parent = Main
+
+--========================================================--
+-- BOTÃO X
+--========================================================--
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.fromOffset(38, 38)
+CloseButton.Position = UDim2.new(1, -45, 0, 8)
+CloseButton.BackgroundColor3 = Color3.fromRGB(150, 55, 55)
+CloseButton.BorderSizePixel = 0
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.TextSize = 17
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.AutoButtonColor = false
+CloseButton.Parent = Main
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 10)
+CloseCorner.Parent = CloseButton
+
+--========================================================--
+-- STATUS
+--========================================================--
+
+local Status = Instance.new("TextLabel")
+Status.Size = UDim2.new(1, -30, 0, 25)
+Status.Position = UDim2.fromOffset(15, 45)
+Status.BackgroundTransparency = 1
+Status.Text = "Escolha o dispositivo"
+Status.TextColor3 = Color3.fromRGB(155, 155, 160)
+Status.TextSize = 13
+Status.Font = Enum.Font.Gotham
+Status.TextXAlignment = Enum.TextXAlignment.Left
+Status.Parent = Main
+
+--========================================================--
+-- ATIVAR / DESATIVAR
+--========================================================--
+
+local Toggle = Instance.new("TextButton")
+Toggle.Size = UDim2.new(1, -30, 0, 42)
+Toggle.Position = UDim2.fromOffset(15, 75)
+Toggle.BackgroundColor3 = Color3.fromRGB(55, 140, 75)
+Toggle.BorderSizePixel = 0
+Toggle.Text = "ATIVADO"
+Toggle.TextColor3 = Color3.new(1, 1, 1)
+Toggle.TextSize = 15
+Toggle.Font = Enum.Font.GothamBold
+Toggle.AutoButtonColor = false
+Toggle.Parent = Main
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 12)
+ToggleCorner.Parent = Toggle
+
+--========================================================--
+-- SELETOR
+--========================================================--
+
+local Selector = Instance.new("Frame")
+Selector.Size = UDim2.new(1, -30, 0, 45)
+Selector.Position = UDim2.fromOffset(15, 128)
+Selector.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+Selector.BorderSizePixel = 0
+Selector.Parent = Main
+
+local SelectorCorner = Instance.new("UICorner")
+SelectorCorner.CornerRadius = UDim.new(0, 12)
+SelectorCorner.Parent = Selector
+
+local SelectedText = Instance.new("TextLabel")
+SelectedText.Size = UDim2.new(1, -55, 1, 0)
+SelectedText.Position = UDim2.fromOffset(14, 0)
+SelectedText.BackgroundTransparency = 1
+SelectedText.Text = "🎮 Controle"
+SelectedText.TextColor3 = Color3.new(1, 1, 1)
+SelectedText.TextSize = 15
+SelectedText.Font = Enum.Font.GothamBold
+SelectedText.TextXAlignment = Enum.TextXAlignment.Left
+SelectedText.Parent = Selector
+
+local Arrow = Instance.new("TextButton")
+Arrow.Size = UDim2.fromOffset(45, 45)
+Arrow.Position = UDim2.new(1, -45, 0, 0)
+Arrow.BackgroundTransparency = 1
+Arrow.Text = "▼"
+Arrow.TextColor3 = Color3.new(1, 1, 1)
+Arrow.TextSize = 18
+Arrow.Font = Enum.Font.GothamBold
+Arrow.AutoButtonColor = false
+Arrow.Parent = Selector
+
+--========================================================--
+-- ÁREA DE OPÇÕES
+--========================================================--
+
+local OptionsArea = Instance.new("ScrollingFrame")
+OptionsArea.Name = "DeviceOptions"
+OptionsArea.Size = UDim2.new(1, -30, 0, 125)
+OptionsArea.Position = UDim2.fromOffset(15, 180)
+OptionsArea.BackgroundColor3 = Color3.fromRGB(32, 32, 38)
+OptionsArea.BorderSizePixel = 0
+OptionsArea.Visible = false
+OptionsArea.ScrollBarThickness = 5
+OptionsArea.CanvasSize = UDim2.new(0, 0, 0, 0)
+OptionsArea.AutomaticCanvasSize = Enum.AutomaticSize.Y
+OptionsArea.ScrollingDirection = Enum.ScrollingDirection.Y
+OptionsArea.Parent = Main
+
+local OptionsCorner = Instance.new("UICorner")
+OptionsCorner.CornerRadius = UDim.new(0, 14)
+OptionsCorner.Parent = OptionsArea
+
+local OptionsPadding = Instance.new("UIPadding")
+OptionsPadding.PaddingTop = UDim.new(0, 8)
+OptionsPadding.PaddingBottom = UDim.new(0, 8)
+OptionsPadding.PaddingLeft = UDim.new(0, 8)
+OptionsPadding.PaddingRight = UDim.new(0, 8)
+OptionsPadding.Parent = OptionsArea
+
+local OptionsLayout = Instance.new("UIListLayout")
+OptionsLayout.Padding = UDim.new(0, 7)
+OptionsLayout.SortOrder = Enum.SortOrder.LayoutOrder
+OptionsLayout.Parent = OptionsArea
+
+--========================================================--
+-- EFEITO DE BOTÃO
+--========================================================--
+
+local function PressEffect(Button)
+
+	local OriginalSize = Button.Size
+	local OriginalPosition = Button.Position
+
+	Button.InputBegan:Connect(function(Input)
+
+		if Input.UserInputType == Enum.UserInputType.Touch
+			or Input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+			Button.Size = UDim2.new(
+				OriginalSize.X.Scale,
+				OriginalSize.X.Offset - 4,
+				OriginalSize.Y.Scale,
+				OriginalSize.Y.Offset - 4
+			)
+
+			Button.Position = UDim2.new(
+				OriginalPosition.X.Scale,
+				OriginalPosition.X.Offset + 2,
+				OriginalPosition.Y.Scale,
+				OriginalPosition.Y.Offset + 2
+			)
+		end
+	end)
+
+	Button.InputEnded:Connect(function(Input)
+
+		if Input.UserInputType == Enum.UserInputType.Touch
+			or Input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+			Button.Size = OriginalSize
+			Button.Position = OriginalPosition
+		end
+	end)
+end
+
+PressEffect(Toggle)
+PressEffect(Arrow)
+PressEffect(CloseButton)
+
+--========================================================--
+-- CRIAR OPÇÃO
+--========================================================--
+
+local function CreateOption(Text, Device)
+
+	local Button = Instance.new("TextButton")
+
+	Button.Size = UDim2.new(1, 0, 0, 42)
+	Button.BackgroundColor3 = Color3.fromRGB(50, 50, 58)
+	Button.BorderSizePixel = 0
+	Button.Text = Text
+	Button.TextColor3 = Color3.new(1, 1, 1)
+	Button.TextSize = 14
+	Button.Font = Enum.Font.GothamBold
+	Button.AutoButtonColor = false
+	Button.Parent = OptionsArea
+
+	local Corner = Instance.new("UICorner")
+	Corner.CornerRadius = UDim.new(0, 10)
+	Corner.Parent = Button
+
+	PressEffect(Button)
+
+	Button.Activated:Connect(function()
+
+		ForcedDevice = Device
+		SelectedText.Text = Text
+
+		if Enabled then
+			ApplySpoof()
+		end
+
+		OptionsArea.Visible = false
+		Arrow.Text = "▼"
+		OptionsOpen = false
+
+		Main.Size = CLOSED_SIZE
+
+	end)
+end
+
+CreateOption("📱 Mobile", "Mobile")
+CreateOption("🖥 PC", "PC")
+CreateOption("🎮 Controle", "Console")
+
+--========================================================--
+-- ABRIR / FECHAR OPÇÕES
+--========================================================--
+
+OptionsOpen = false
+
+Arrow.Activated:Connect(function()
+
+	OptionsOpen = not OptionsOpen
+
+	if OptionsOpen then
+
+		OptionsArea.Visible = true
+		Arrow.Text = "▲"
+		Main.Size = OPEN_SIZE
+
+	else
+
+		OptionsArea.Visible = false
+		Arrow.Text = "▼"
+		Main.Size = CLOSED_SIZE
+
+	end
+end)
+
+--========================================================--
+-- BOTÃO ATIVAR
+--========================================================--
+
+Toggle.Activated:Connect(function()
+
+	if Enabled then
+
+		ResetSpoof()
+
+		Toggle.Text = "DESATIVADO"
+		Toggle.BackgroundColor3 = Color3.fromRGB(140, 55, 55)
+
+	else
+
+		Enabled = true
+
+		Toggle.Text = "ATIVADO"
+		Toggle.BackgroundColor3 = Color3.fromRGB(55, 140, 75)
+
+		ApplySpoof()
+
+	end
+end)
+
+--========================================================--
+-- TELA DE CONFIRMAÇÃO DO X
+--========================================================--
+
+local ConfirmGui = Instance.new("ScreenGui")
+ConfirmGui.Name = "RemoveConfirmation"
+ConfirmGui.ResetOnSpawn = false
+ConfirmGui.DisplayOrder = 1000000
+ConfirmGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ConfirmGui.Enabled = false
+ConfirmGui.Parent = PlayerGui
+
+local Overlay = Instance.new("Frame")
+Overlay.Size = UDim2.fromScale(1, 1)
+Overlay.Position = UDim2.fromScale(0, 0)
+Overlay.BackgroundColor3 = Color3.fromRGB(110, 110, 110)
+Overlay.BackgroundTransparency = 0.08
+Overlay.BorderSizePixel = 0
+Overlay.Parent = ConfirmGui
+
+local ConfirmBox = Instance.new("Frame")
+ConfirmBox.Size = UDim2.fromOffset(300, 185)
+ConfirmBox.Position = UDim2.new(0.5, -150, 0.5, -92)
+ConfirmBox.BackgroundColor3 = Color3.fromRGB(28, 28, 33)
+ConfirmBox.BorderSizePixel = 0
+ConfirmBox.Parent = Overlay
+
+local ConfirmCorner = Instance.new("UICorner")
+ConfirmCorner.CornerRadius = UDim.new(0, 18)
+ConfirmCorner.Parent = ConfirmBox
+
+local ConfirmStroke = Instance.new("UIStroke")
+ConfirmStroke.Thickness = 2
+ConfirmStroke.Transparency = 0.15
+ConfirmStroke.Parent = ConfirmBox
+
+local ConfirmTitle = Instance.new("TextLabel")
+ConfirmTitle.Size = UDim2.new(1, -30, 0, 75)
+ConfirmTitle.Position = UDim2.fromOffset(15, 15)
+ConfirmTitle.BackgroundTransparency = 1
+ConfirmTitle.Text = "Você tem certeza que quer remover o Forsaken Spoof Device?"
+ConfirmTitle.TextColor3 = Color3.new(1, 1, 1)
+ConfirmTitle.TextSize = 16
+ConfirmTitle.Font = Enum.Font.GothamBold
+ConfirmTitle.TextWrapped = true
+ConfirmTitle.Parent = ConfirmBox
+
+local YesButton = Instance.new("TextButton")
+YesButton.Size = UDim2.fromOffset(120, 42)
+YesButton.Position = UDim2.fromOffset(20, 125)
+YesButton.BackgroundColor3 = Color3.fromRGB(55, 140, 75)
+YesButton.BorderSizePixel = 0
+YesButton.Text = "SIM"
+YesButton.TextColor3 = Color3.new(1, 1, 1)
+YesButton.TextSize = 15
+YesButton.Font = Enum.Font.GothamBold
+YesButton.AutoButtonColor = false
+YesButton.Parent = ConfirmBox
+
+local YesCorner = Instance.new("UICorner")
+YesCorner.CornerRadius = UDim.new(0, 10)
+YesCorner.Parent = YesButton
+
+local NoButton = Instance.new("TextButton")
+NoButton.Size = UDim2.fromOffset(120, 42)
+NoButton.Position = UDim2.fromOffset(160, 125)
+NoButton.BackgroundColor3 = Color3.fromRGB(140, 55, 55)
+NoButton.BorderSizePixel = 0
+NoButton.Text = "NÃO"
+NoButton.TextColor3 = Color3.new(1, 1, 1)
+NoButton.TextSize = 15
+NoButton.Font = Enum.Font.GothamBold
+NoButton.AutoButtonColor = false
+NoButton.Parent = ConfirmBox
+
+local NoCorner = Instance.new("UICorner")
+NoCorner.CornerRadius = UDim.new(0, 10)
+NoCorner.Parent = NoButton
+
+PressEffect(YesButton)
+PressEffect(NoButton)
+
+--========================================================--
+-- CLICAR NO X
+--========================================================--
+
+CloseButton.Activated:Connect(function()
+
+	ConfirmGui.Enabled = true
+
+end)
+
+--========================================================--
+-- NÃO
+--========================================================--
+
+NoButton.Activated:Connect(function()
+
+	ConfirmGui.Enabled = false
+
+end)
+
+--========================================================--
+-- SIM
+--========================================================--
+
+YesButton.Activated:Connect(function()
+
+	-- Restaura o dispositivo real antes de remover
+	ResetSpoof()
+
+	ConfirmGui.Enabled = false
+
+	-- Remove a interface
+	Gui:Destroy()
+
+	-- Remove também a confirmação
+	ConfirmGui:Destroy()
+
+end)
+
+--========================================================--
+-- ASSINATURA
+--========================================================--
+
+local Credit = Instance.new("TextLabel")
+
+Credit.Size = UDim2.new(1, -20, 0, 25)
+Credit.Position = UDim2.new(0, 10, 1, -32)
+Credit.BackgroundTransparency = 1
+Credit.Text = "🖥By henrique📱"
+Credit.TextColor3 = Color3.fromRGB(130, 130, 135)
+Credit.TextSize = 13
+Credit.Font = Enum.Font.GothamBold
+Credit.TextXAlignment = Enum.TextXAlignment.Center
+Credit.Parent = Main
+
+--========================================================--
+-- ARRASTAR GUI
+--========================================================--
+
+local Dragging = false
+local DragStart
+local StartPosition
+
+Main.InputBegan:Connect(function(Input)
+
+	if Input.UserInputType == Enum.UserInputType.Touch
+		or Input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+		Dragging = true
+		DragStart = Input.Position
+		StartPosition = Main.Position
+
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(Input)
+
+	if not Dragging then
+		return
+	end
+
+	if Input.UserInputType == Enum.UserInputType.Touch
+		or Input.UserInputType == Enum.UserInputType.MouseMovement then
+
+		local Delta = Input.Position - DragStart
+
+		Main.Position = UDim2.new(
+			StartPosition.X.Scale,
+			StartPosition.X.Offset + Delta.X,
+
+			StartPosition.Y.Scale,
+			StartPosition.Y.Offset + Delta.Y
+		)
+
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(Input)
+
+	if Input.UserInputType == Enum.UserInputType.Touch
+		or Input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+		Dragging = false
+
+	end
+end)
+
+--========================================================--
+-- INICIAR
+--========================================================--
+
+ApplySpoof()
+
+print("🖥By henrique📱 | Script Forsaken Spoof Device carregado!")
