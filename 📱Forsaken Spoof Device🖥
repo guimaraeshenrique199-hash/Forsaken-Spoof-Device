@@ -351,7 +351,7 @@ CreateOption("🎮 Controle", "Console")
 -- ABRIR / FECHAR OPÇÕES
 --========================================================--
 
-OptionsOpen = false
+local OptionsOpen = false
 
 Arrow.Activated:Connect(function()
 
@@ -505,15 +505,14 @@ end)
 
 YesButton.Activated:Connect(function()
 
-	-- Restaura o dispositivo real antes de remover
-	ResetSpoof()
+	-- IMPORTANTE:
+	-- Não chama ResetSpoof().
+	-- O dispositivo escolhido continua ativado.
 
 	ConfirmGui.Enabled = false
 
-	-- Remove a interface
+	-- Remove somente as interfaces
 	Gui:Destroy()
-
-	-- Remove também a confirmação
 	ConfirmGui:Destroy()
 
 end)
@@ -592,4 +591,4 @@ end)
 
 ApplySpoof()
 
-print("🖥By henrique📱 | Script Forsaken Spoof Device carregado!")
+print("🖥By henrique📱 | Forsaken Spoof Device carregado!")
